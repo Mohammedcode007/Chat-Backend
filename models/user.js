@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const useSchema = mongoose.Schema({
     FirstName: {
@@ -28,10 +29,14 @@ const useSchema = mongoose.Schema({
     Paasword: {
         type: String
     },
+    passwordConfirm:{
+        type: String
+
+    },
     PaaswordChangedAt: {
         type: Date
     },
-    PaaswordResetToken: {
+    passwordResetToken: {
         type: String
     },
     PaaswordResetExpires: {
@@ -84,6 +89,34 @@ userSchema.methods.correctOTP = async function (candidateOTP, userOTP) {
     return await bcrypt.compare(candidateOTP, userOTP);
 };
 
+
+userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+  
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+  
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  
+    return resetToken;
+  };
+
+
+  userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+    if (this.passwordChangedAt) {
+      const changedTimeStamp = parseInt(
+        this.passwordChangedAt.getTime() / 1000,
+        10
+      );
+      return JWTTimeStamp < changedTimeStamp;
+    }
+  
+    // FALSE MEANS NOT CHANGED
+    return false;
+  };
+  
 // Compile the schema into a model
 const User = mongoose.model("User", useSchema);
 
