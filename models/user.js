@@ -45,37 +45,44 @@ const useSchema = mongoose.Schema({
     },
     Verified: {
         type: Boolean,
-        default:false
+        default: false
     },
-    otp:{
-        type:Number
+    otp: {
+        type: Number
     },
-    otp_expiry_time:{
-        type:Date
+    otp_expiry_time: {
+        type: Date
     }
 });
 
 
 userSchema.pre("save", async function (next) {
-    // Only run this function if password was actually modified
-    if (!this.isModified("password") || !this.password) return next();
-  
-    // Hash the password with cost of 12
-    this.password = await bcrypt.hash(this.password, 12);
-  
-    //! Shift it to next hook // this.passwordChangedAt = Date.now() - 1000;
-  
-    next();
-  });
-  
 
-useSchema.methods.correctpassword = async function (canditatePassword,userPassword) {
-    return await bcrypt.compare(canditatePassword,userPassword)
+    // الشرط الاول يتحقق اذا لم يتم تعديلها او القيمه فارغه يكمل البكود 
+    if (!this.isModified("password") || !this.password) return next();
+    // اذا وجد الباسورد يقوم بتشفيره
+    this.password = await bcrypt.hash(this.password, 12);
+
+
+    next();
+});
+
+// داله تقوم بالتحقق من كلمه المرور صحيحه ام لا
+useSchema.methods.correctpassword = async function (canditatePassword, userPassword) {
+    //"candidatePassword": هو كلمة المرور المرشحة التي يتم ارسالها للتحقق.
+    //"userPassword": هو كلمة المرور المستخدمة المخزنة في قاعدة البيانات.
+    //
+    return await bcrypt.compare(canditatePassword, userPassword)
 }
 
+//اله تقوم بالتحقق من otp المستخدمه متطابقه مع التي تم ارساله الى المستخدم
+
 userSchema.methods.correctOTP = async function (candidateOTP, userOTP) {
+    //"candidateOTP": يُمثل رمز OTP المرشح الذي يتم إرساله للتحقق.
+    //"userOTP": يُمثل رمز OTP المستخدم المخزن في قاعدة البيانات.
+
     return await bcrypt.compare(candidateOTP, userOTP);
-  };
+};
 
 // Compile the schema into a model
 const User = mongoose.model("User", useSchema);
