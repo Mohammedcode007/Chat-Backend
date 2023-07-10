@@ -1,28 +1,25 @@
 {
-  "name": "chat-backend",
+  "name": "chatbackend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^6.7.0",
-    "helmet": "^7.0.0",
+    "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.3.0",
-    "morgan": "^1.10.0",
-    "otp-generator": "^4.0.1",
-    "xss": "^1.0.14"
+    "mongoose": "^7.3.1",
+    "nodemon": "^2.0.22",
+    "socket.io": "^4.7.1"
   }
 }
